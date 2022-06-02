@@ -1,5 +1,6 @@
 import statistics as st
 
+
 def wordCountStats(data):
     stats = {}
     wordsMonth = {}
