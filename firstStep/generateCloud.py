@@ -7,9 +7,16 @@ import os
 
 
 def genCloud(wordFreq):
-    wc = WordCloud(background_color="black", max_words=len(
-        wordFreq), max_font_size=256, random_state=42, width=600, height=600)
+    dir = os.getcwd()
+    mask = np.array(Image.open(dir+"/mail.jpg"))
+    wc = WordCloud(background_color="white", max_words=len(
+        wordFreq), max_font_size=256, random_state=42, mask=mask)
     wc.generate_from_frequencies(wordFreq)
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
-    plt.show()
+    if not os.path.exists(dir+"/graphics"):
+        os.makedirs("graphics")
+    os.chdir(dir+"/graphics")
+    if not os.path.isfile(dir+"/graphics/cloud.png"):
+        plt.savefig("cloud.png")
+    os.chdir(dir)
