@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import pandas as pd
 
-MONTHS = {"01": "Janeiro", "02": "Fevereiro", "03": "Março", "04": "Abril", "05": "Maio", "06": "Junho",
-          "07": "Julho", "08": "Agosto", "09": "Setembro", "10": "Outubro", "11": "Novembro", "12": "Dezembro"}
+MONTHS = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
+          7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"}
 
 
 def createBar(spamMonths, dir):
@@ -67,33 +68,24 @@ def graphMonth(month, spam, notSpam, dir):
     if not os.path.exists(dir+"/graphics"):
         os.makedirs("graphics")
     os.chdir(dir+"/graphics")
-    if not os.path.isfile(dir+"/graphics/"+month+".png"):
-        plt.savefig(month+".png")
+    if not os.path.isfile(dir+"/graphics/"+str(month)+".png"):
+        plt.savefig(str(month)+".png")
     os.chdir(dir+"/..")
 
 
 def filterMonthly(data):
     spamMonths = {}
-    j = 0
-    for i in data["Date"]:
-        m = i[5:-12]  # month
-        isSpam = data["IsSpam"][j]  # Is spam?
-        if(m not in spamMonths):
-            spamMonths[m] = {}
-            spamMonths[m]["spam"] = 0
-            spamMonths[m]["notSpam"] = 0
-        if(isSpam == "yes"):
-            spamMonths[m]["spam"] += 1
-        else:
-            spamMonths[m]["notSpam"] += 1
-        j += 1
+    data["Date"] = pd.to_datetime(data["Date"])
+    months = data["Date"].dt.month.unique()
+    for m in months:
+        spamMonths[m] = {}
+        spamMonths[m]["spam"] = data.query("Date.dt.month == @m & IsSpam == 'yes'").shape[0]
+        spamMonths[m]["notSpam"] = data.query("Date.dt.month == @m & IsSpam == 'no'").shape[0]
     return(spamMonths)
-
 
 def spamsMonthly(data):
     dir = os.getcwd()
     spamMonths = filterMonthly(data)
     for month in spamMonths:
-        graphMonth(month, spamMonths[month]["spam"],
-                   spamMonths[month]["notSpam"], dir)
+        graphMonth(month, spamMonths[month]["spam"], spamMonths[month]["notSpam"], dir)
     createBar(spamMonths,dir)
