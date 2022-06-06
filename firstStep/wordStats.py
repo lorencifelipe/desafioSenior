@@ -1,26 +1,21 @@
-import statistics as st
-
+import pandas as pd
 
 def wordCountStats(data):
     stats = {}
-    wordsMonth = {}
-    j = 0
-    for i in data["Date"]:
-        m = i[5:-12]  # month
-        if(m not in wordsMonth):
-            stats[m] = {}
-            wordsMonth[m] = []
-        wordsMonth[m].append(data["Word_Count"][j])
-        j += 1
-    for i in wordsMonth:
-        stats[i]["Max"] = max(wordsMonth[i])
-        stats[i]["Min"] = min(wordsMonth[i])
-        stats[i]["Media"] = st.fmean(wordsMonth[i])
-        stats[i]["Mediana"] = st.median(wordsMonth[i])
-        stats[i]["Desvio"] = st.pstdev(wordsMonth[i])
-        stats[i]["Variancia"] = st.variance(wordsMonth[i])
-    for i in wordsMonth:
-        print("Mês " + str(i) + ":")
-        for j in stats[i]:
-            print(str(j) + " = " + str(stats[i][j]))
+    wordCountMonths = {}
+    months = data["Date"].dt.month.unique()
+    for m in months:
+        wordCountMonths[m] = data.query("Date.dt.month == @m").Word_Count
+    for m in wordCountMonths:
+        stats[m] = {}
+        stats[m]["Max"] = wordCountMonths[m].max()
+        stats[m]["Min"] = wordCountMonths[m].min()
+        stats[m]["Media"] = wordCountMonths[m].mean()
+        stats[m]["Mediana"] = wordCountMonths[m].median()
+        stats[m]["Desvio"] = wordCountMonths[m].std()
+        stats[m]["Variancia"] = wordCountMonths[m].var()
+    for m in months:
+        print("Mês " + str(m) + ":")
+        for j in stats[m]:
+            print(str(j) + " = " + str(stats[m][j]))
         print("\n")
