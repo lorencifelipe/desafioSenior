@@ -135,7 +135,7 @@ O programa irá automaticamente realizar os experimentos descritos no artigo, re
 0.9584698147041243
 ```
 
-**Guia de branches**:
+## Guia de branches:
 
 - main: repositório entregue dentro do prazo do desafio
 - Improvements: uma série de melhorias de código em relação à branch main 
